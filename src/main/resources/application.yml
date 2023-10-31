@@ -1,0 +1,22 @@
+server:
+  port: 9090
+
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: public-service-api  # ??
+          uri: http://localhost:8080  # api server uri
+          predicates:
+            - Path=/hcms/**
+          filters:
+            - RewritePath=/hcms(?<segment>/?.*), $\{segment}
+            - ServiceApiPublicFilter
+
+        - id: public-open-api  # ??
+          uri: http://localhost:8080  # api server uri
+          predicates:
+            - Path=/open-api/hcms/**
+          filters:
+            - RewritePath=/open-api/hcms(?<segment>/?.*), $\{segment}
+            - ServiceApiPublicFilter
