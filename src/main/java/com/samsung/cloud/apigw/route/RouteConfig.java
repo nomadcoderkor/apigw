@@ -23,8 +23,17 @@ public class RouteConfig {
   @Bean
   public RouteLocator gatewayRoutes(RouteLocatorBuilder builder) {
     return builder.routes()
-        .route("service-api-route", r -> r
-            .order(-1)
+        .route("public-service-api", r -> r
+            .order(0)
+            .path("/open-api/hcms/api/**")
+            .filters(f -> f
+                .filter(serviceApiPrivateFilter.apply(new ServiceApiPrivateFilter.Config()))
+                .rewritePath("/open-api/hcms(?<segment>/?.*)", "${segment}")
+            )
+            .uri("http://localhost:8080")
+        )
+        .route("private-service-api", r -> r
+            .order(1)
             .path("/open-api/hcms/api/**")
             .filters(f -> f
                 .filter(serviceApiPrivateFilter.apply(new ServiceApiPrivateFilter.Config()))
